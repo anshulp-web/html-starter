@@ -7,7 +7,9 @@
     <style>
       body {
         font-family: 'Arial', sans-serif;
-        background-color: #f0f8ff;
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -15,37 +17,74 @@
         margin: 0;
         overflow: hidden;
       }
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
       .card {
-        background-color: white;
+        background-color: rgba(255, 255, 255, 0.9);
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         padding: 40px;
         text-align: center;
         max-width: 500px;
         width: 90%;
         position: relative;
         overflow: hidden;
-        transition: transform 0.3s ease;
+        transition: all 0.5s ease;
       }
       .card:hover {
-        transform: scale(1.05);
+        transform: translateY(-10px) rotate(2deg);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
       }
       h1 {
         color: #4a4a4a;
         margin-bottom: 20px;
-        animation: fadeIn 1.5s ease-out;
+        animation: bounce 1s ease infinite;
+      }
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-20px);
+        }
+        60% {
+          transform: translateY(-10px);
+        }
       }
       img {
         width: 200px;
         height: 200px;
         border-radius: 50%;
         margin-bottom: 20px;
-        /* animation: rotate 10s linear infinite; */
+        transition: all 0.5s ease;
+        cursor: pointer;
+      }
+      img:hover {
+        transform: scale(1.1) rotate(360deg);
       }
       p {
         color: #666;
         line-height: 1.6;
-        animation: slideIn 1s ease-out;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease;
+      }
+      .visible {
+        opacity: 1;
+        transform: translateY(0);
       }
       .heart {
         position: absolute;
@@ -55,6 +94,7 @@
         width: 30px;
         transform: rotate(-45deg);
         animation: pulse 1s linear infinite;
+        cursor: pointer;
       }
       .heart:after,
       .heart:before {
@@ -72,32 +112,6 @@
       .heart:before {
         top: 0;
         left: 15px;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      @keyframes slideIn {
-        from {
-          transform: translateY(50px);
-          opacity: 0;
-        }
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-      @keyframes rotate {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
       }
       @keyframes pulse {
         0% {
@@ -127,6 +141,33 @@
           opacity: 0;
         }
       }
+      .firework {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        animation: firework 2s ease-out infinite;
+      }
+      @keyframes firework {
+        0% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--tx), var(--ty));
+          opacity: 0;
+        }
+      }
+      #message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 10px;
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -134,9 +175,10 @@
       <img
         src="https://media.licdn.com/dms/image/v2/D5603AQF6rUQGkvDKoA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1706271333622?e=1730937600&v=beta&t=YcIk55l039kYv22FgbX5x6wsPGcPW8ZPaudzVtYHwQI"
         alt="Teacher"
+        id="teacherImage"
       />
       <h1>Happy Teacher's Day!</h1>
-      <p>
+      <p id="greeting">
         Dear Teacher,<br /><br />
         Your guidance illuminates our path,<br />
         Your wisdom shapes our minds,<br />
@@ -146,6 +188,7 @@
       <div class="heart" style="top: 10px; right: 10px"></div>
       <div class="heart" style="bottom: 10px; left: 10px"></div>
     </div>
+    <div id="message"></div>
 
     <script>
       function createConfetti() {
@@ -164,7 +207,57 @@
         }, 5000);
       }
 
+      function createFirework() {
+        const firework = document.createElement('div');
+        firework.classList.add('firework');
+        firework.style.left = Math.random() * 100 + 'vw';
+        firework.style.top = Math.random() * 100 + 'vh';
+        firework.style.backgroundColor = `hsl(${
+          Math.random() * 360
+        }, 100%, 50%)`;
+        firework.style.setProperty('--tx', `${(Math.random() - 0.5) * 200}px`);
+        firework.style.setProperty('--ty', `${(Math.random() - 0.5) * 200}px`);
+        document.body.appendChild(firework);
+
+        setTimeout(() => {
+          firework.remove();
+        }, 2000);
+      }
+
       setInterval(createConfetti, 300);
+      setInterval(createFirework, 500);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const greeting = document.getElementById('greeting');
+        greeting.classList.add('visible');
+
+        const hearts = document.querySelectorAll('.heart');
+        hearts.forEach((heart) => {
+          heart.addEventListener('click', () => {
+            heart.style.transform = 'rotate(-45deg) scale(2)';
+            setTimeout(() => {
+              heart.style.transform = 'rotate(-45deg) scale(1)';
+            }, 300);
+          });
+        });
+
+        const teacherImage = document.getElementById('teacherImage');
+        const message = document.getElementById('message');
+        teacherImage.addEventListener('click', () => {
+          message.style.display = 'block';
+          message.textContent =
+            'Thank you for your dedication and inspiration!';
+          setTimeout(() => {
+            message.style.display = 'none';
+          }, 3000);
+        });
+
+        document.body.addEventListener('mousemove', (e) => {
+          const x = e.clientX / window.innerWidth;
+          const y = e.clientY / window.innerHeight;
+          document.body.style.backgroundPosition = `${x * 100}% ${y * 100}%`;
+        });
+      });
     </script>
   </body>
 </html>
